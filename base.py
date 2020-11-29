@@ -40,7 +40,6 @@ class TurnData:
 class BaseAgent(metaclass=abc.ABCMeta):
 
     def __init__(self):
-        self.answers = ["DOWN", "UP", "DOWN", "RIGHT"]
         self.connection = socket.socket()
         self.connection.connect(('127.0.0.1', 9921))
         self.name = read_utf(self.connection)
@@ -48,6 +47,8 @@ class BaseAgent(metaclass=abc.ABCMeta):
         self.grid_size = int(read_utf(self.connection))
         self.max_turns = int(read_utf(self.connection))
         self.decision_time_limit = read_utf(self.connection)
+        self.map_update = False
+        self.boolcheck = True
 
     def _read_turn_data(self, first_line: str) -> TurnData:
         turns_left = int(first_line)
@@ -77,7 +78,7 @@ class BaseAgent(metaclass=abc.ABCMeta):
             turn_data = self._read_turn_data(first_line)
             action = self.do_turn(turn_data)
             write_utf(self.connection, action.name)
-            
+
     @abc.abstractmethod
     def do_turn(self, turn_data: TurnData) -> Action:
         pass
